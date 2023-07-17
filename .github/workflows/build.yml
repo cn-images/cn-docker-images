@@ -19,7 +19,7 @@ jobs:
       matrix:
         platform: ['multi', 'amd64']
         include:
-          # arg for `--platforms`
+          # arg for `--platform`
           - platform: 'multi'
             platforms: ${{ vars.DOCKER_ALL_PLATFORMS }}
 
