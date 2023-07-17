@@ -17,16 +17,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ['multi-platform', 'amd64']
+        platform: ['multi', 'amd64']
         include:
-          - platform: 'multi-platform'
+          # arg for `--platforms`
+          - platform: 'multi'
             platforms: ${{ vars.DOCKER_ALL_PLATFORMS }}
-          - platform: 'multi-platform'
+
+          # image list
+          - platform: 'multi'
             image: 'debian'
             tag: 'sid'
           - platform: 'amd64'
             image: 'archlinux'
             tag: 'base'
+
+          # define latest tags for images
+          - platform: 'multi'
+            image: 'debian'
+            latest: 'bookworm'
+          - platform: 'amd64'
+            image: 'archlinux'
+            latest: 'base'
 
     steps:
       - name: Checkout
@@ -59,4 +70,6 @@ jobs:
           push: true
           tags: |
             ${{ vars.DOCKERHUB_USERNAME }}/${{ matrix.image }}:${{ matrix.tag }}
+            ${{ (matrix.tag == matrix.latest) && format('{0}/{1}:latest', vars.DOCKERHUB_USERNAME, matrix.image) || '' }}
             ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}:${{ matrix.tag }}
+            ${{ (matrix.tag == matrix.latest) && format('ghcr.io/{0}/{1}:latest', github.repository_owner, matrix.image) || '' }}
